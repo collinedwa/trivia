@@ -39,7 +39,8 @@ class App extends Component {
           (we couldn&lsquo;t think of a better name,{' '}
           <span className='fw-bolder'>sorry</span>)
         </h2>
-        Category:
+        <div>
+        Category: 
         <select onChange={(e)=>{
           this.setState({category: e.target.value});
         }}>
@@ -47,14 +48,11 @@ class App extends Component {
             <option value={category.id}>{category.value}</option>
           )}
         </select>
-        Number of Questions:
-        <select onChange={(e)=>{
-          this.setState({amount: e.target.value});
-        }}>
-          {[...Array(5).keys()].map((num)=>
-            <option value={num+1}>{num+1}</option>
-          )}
-        </select>
+        </div>
+        <div>
+        Number of Questions: 
+        <input type="number" id="quantity" name="quantity" min="1" max="5" onChange={(e)=>this.setState({amount: e.target.value})}/>
+        </div>
         <hr />
         <div>
           {this.state.question && this.state.question.map((q) => <Question question={q}/>)}
