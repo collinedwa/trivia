@@ -1,10 +1,34 @@
 import React, { Component } from 'react';
 import { Question } from './components';
-
-const category = '';
-const TRIVIA_API = `https://opentdb.com/api.php?amount=1&category=${category}&difficulty=easy`;
+import { categories } from './lib';
 
 class App extends Component {
+
+  constructor() {
+    super();
+    this.state = {
+      question : null,
+      category: '',
+      amount: 5
+    };
+  }
+
+  async fetchResults () {
+    const TRIVIA_API = `https://opentdb.com/api.php?amount=${this.state.amount}&category=${this.state.category}&difficulty=easy`;
+    const res = await fetch(TRIVIA_API);
+    const json = await res.json();
+    this.setState({question: json.results});
+    console.log(json.results)
+  }
+
+  componentDidMount() {
+    this.fetchResults();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.amount != prevState.amount || this.state.category != prevState.category)
+    this.fetchResults();
+  }
 
 
   render() {
@@ -15,9 +39,25 @@ class App extends Component {
           (we couldn&lsquo;t think of a better name,{' '}
           <span className='fw-bolder'>sorry</span>)
         </h2>
+        Category:
+        <select onChange={(e)=>{
+          this.setState({category: e.target.value});
+        }}>
+          {categories.map((category)=>
+            <option value={category.id}>{category.value}</option>
+          )}
+        </select>
+        Number of Questions:
+        <select onChange={(e)=>{
+          this.setState({amount: e.target.value});
+        }}>
+          {[...Array(5).keys()].map((num)=>
+            <option value={num+1}>{num+1}</option>
+          )}
+        </select>
         <hr />
         <div>
-          {/* Render question here */}
+          {this.state.question && this.state.question.map((q) => <Question question={q}/>)}
         </div>
       </div>
     );

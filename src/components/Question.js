@@ -6,15 +6,26 @@ class Question extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      answers: [],
       guessed: false,
-      guess: '',
+      guess: ''
     };
+  }
 
-    // convert all answers into a single array, and randomize the array
-    this.answers = randomizeArray([
-      ...props.question.incorrect_answers,
-      props.question.correct_answer,
-    ]);
+  mixAnswers() {
+    this.setState({answers: randomizeArray([
+      ...this.props.question.incorrect_answers,
+      this.props.question.correct_answer,
+    ]), guessed: false, guess: ''});
+  }
+
+  componentDidMount(){
+    this.mixAnswers();
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    if (prevProps.question != this.props.question)
+    this.mixAnswers();
   }
 
   handleGuess = (answer) => {
@@ -31,15 +42,28 @@ class Question extends React.Component {
         </h4>
 
         <div>
-          {this.answers.map((answer) => (
+          {this.state.answers.map((answer) => (
             <AnswerButton
               key={answer}
               answer={answer}
+              correct_answer={this.props.question.correct_answer}
+              handleGuess={this.handleGuess}
+              guessed={this.state.guessed}
+              guess={this.state.guess}
             />
           ))}
         </div>
 
         {/* Dynamically render correct/incorrect here! */}
+        {this.state.guessed ? <>
+        <div>
+          {console.log(this.state.guess)}
+          {(this.state.guess == this.props.question.correct_answer) 
+          ? "Correct!" 
+          : `Wrong! The correct answer is ${this.props.question.correct_answer}`}
+        </div>
+        </> 
+          : null}
       </div>
     );
   }
